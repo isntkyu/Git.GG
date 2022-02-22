@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+    meta(charset='utf-8')
+  body
+    div(class='container')
+      div(class="p-3 mb-2 bg-primary text-white")
+        font(size='7') 활용도 평점 순위
+      table(class='table table-hover table-striped table-sm')
+        each topic in top2
+          tr
+            td(align='center' style="font-weight:bold")
+              font(size='5') #{topic.RNUM}
+            td(align='center' style="font-weight:bold")
+              font(size='5') #{topic.user}
+            td(align='center' style="font-weight:bold")
+              font(size='5') #{topic.hr}

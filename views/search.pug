@@ -1,0 +1,129 @@
+doctype html
+html
+  link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+  head
+    meta(charset='utf-8')
+
+    title search form
+    //아래 new GitHub() 사용하기 위해서는 아래에 선언하면 안되고 위에 먼저 선언
+    script(src="GitHub.js")
+    script.
+      function regist(){
+        form1.action="/review"; //서버의 url
+        form1.submit();
+        setTimeout(function(){
+          location.reload();
+          },1500); 
+        //- location.href=location.href.name;
+        //window.location.reload();
+      }
+  body
+    script.
+      const github = new GitHub();
+
+      	github.getUser("#{name}")
+      	.then(data => {
+          var totalstar = 0;
+          var reposname = [], reposurl=[];
+          for(var i = 0; i<data.star.length;i++){
+            totalstar+=data.star[i].stargazers_count;
+            //- if(data.star[i].stargazers_count > )
+            reposname[i] = data.star[i].name;
+            reposurl[i] = data.star[i].html_url; 
+          }
+
+          var mostlang = '';
+          var count= [];
+          for(var i =0; i<data.star.length;i++){
+            count[i] = new Array();
+            count[i][0]= '';
+            count[i][1] = 0;
+            for( var j = 0; j < count.length ; j++){
+              if(count[j][0] !== data.star[i].language){
+                count[i][0] = data.star[i].language;
+                break;
+              }
+              else if(count[j][0] === data.star[i].language) {count[j][1]++;break;}
+            }
+          }
+          var max = 0;
+          for(var i = 0; i < count.length;i++){
+            if(count[i][1] > max)mostlang = count[i][0];
+          }
+
+          var str ="<table class='table table-hover table-striped table-sm'>";
+          str += "<th>저장소 URL</th><th>Language</th><th>Stars</th>";
+          for(var i = 0;i<data.star.length;i++){
+            str += "<tr><th>";
+            str += "<a href="+reposurl[i]+" target='_new'>";
+            str += reposname[i];
+            str += "</a></th><td>";
+            str += data.star[i].language;
+            str += "</td><th>⭐"
+            str += data.star[i].stargazers_count;
+            str += "</th></tr>";
+          }
+          str += "</table>";
+          
+
+      		if(data.profile.message === 'Not Found'){
+      			document.getElementById('profile').innerHTML = `Name : Not Found`;
+      		}
+      		else{
+            //innterHTML -> 오타 수정
+      			document.getElementById('profile').innerHTML = `
+              <img src=${data.profile.avatar_url} width="300" height="300"> <br>
+              <font size='7' font-weight='border'>#{name}</font> 
+                <font size='4'> @ ${data.profile.name}</font><br>
+              <h2>
+      				  Repository : ${data.profile.public_repos} <br>
+      				  Location&nbsp&nbsp&nbsp&nbsp&nbsp: ${data.profile.location} <br>
+                Followers&nbsp&nbsp&nbsp: ${data.profile.followers}<br>
+              <h2>
+                Total ⭐ : ${totalstar}  <br>
+              `;
+            document.getElementById('reposurl').innerHTML=`
+            <h3>
+              <font size='7'>Most Language  :  <U>${mostlang}</U></font> <br>
+                ${str}
+               `;
+           
+      		}
+      	})
+    div(id="profile")
+    div(style="position:absolute; right:0px; top:0px;" id="reposurl")
+    div(id="starre")
+      table
+        th(widht='120') 사용자
+        th(width='80') 창의성
+        th(width='80') 활용도
+        each rows in topicc
+          tr
+            th  #{rows.user}&nbsp&nbsp
+            th  #{rows.ss} 
+            th  #{rows.ss2} 
+    div(class="review")
+      form(name='form1', method='POST')
+        div
+          input(width='230' type="text", name='nick', value=`${name}`, readonly, style='background-color:transparent;border:0 solid black;text-align:center; color:white;')
+        div
+          textarea(style="width:355px;" name='coment' class='panel panel-primary' placeholder='솔직한 리뷰는 큰 도움이 됩니다')
+        div 활용도 
+          INPUT(TYPE='RADIO' NAME='star' VALUE=1) 😰!  
+          INPUT(TYPE='RADIO' NAME='star' VALUE=2) 😟!  
+          INPUT(TYPE='RADIO' NAME='star' VALUE=3) 🤔!  
+          INPUT(TYPE='RADIO' NAME='star' VALUE=4) 🙂!  
+          INPUT(TYPE='RADIO' name='star' value=5) 🤗!  
+        div 창의성 
+          INPUT(TYPE='RADIO' NAME='star2' VALUE=1) 😰! 
+          INPUT(TYPE='RADIO' NAME='star2' VALUE=2) 😟! 
+          INPUT(TYPE='RADIO' NAME='star2' VALUE=3) 🤔! 
+          INPUT(TYPE='RADIO' NAME='star2' VALUE=4) 🙂! 
+          INPUT(TYPE='RADIO' name='star2' value=5) 🤗! 
+        div
+          button(onclick='regist(); return false;' class='btn btn-primary') 리뷰등록하기
+      form(action = '/starreview', method='POST')
+        div
+          input(type="text", name='nick', value=`${name}`, readonly, style='background-color:transparent;border:0 solid black;text-align:center; color:white')
+        div
+          input(type='submit' value='리뷰보러가기' class='btn btn-primary')
